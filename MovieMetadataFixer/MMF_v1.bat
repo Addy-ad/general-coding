@@ -89,22 +89,22 @@ set i=0
 for /f "usebackq delims=" %%F in (`powershell -NoP -C "%PSCMD%"`) do (
     set /a i+=1
     
-    :: Store file path in array using counter as index
+    rem Store file path in array using counter as index
     call set "filepath[%%i%%]=%%~F"
     
-    :: Display file number and path to user
+    rem Display file number and path to user
     call echo File %%i%%: %%~F
     
-    :: For the first file only, determine source and output folders
-    :: This assumes all selected files are in the same directory
+    rem For the first file only, determine source and output folders
+    rem This assumes all selected files are in the same directory
     call if %%i%%=="1" (
-        :: Extract directory information from the first file's path
+        rem Extract directory information from the first file's path
         for %%A in ("%%~F") do (
-            :: Get the parent directory of the first file
+            rem Get the parent directory of the first file
             for /f "delims=" %%B in ("%%~dpA.") do (
-                :: Store the full path of the source folder
+                rem Store the full path of the source folder
                 set "srcFolder=%%~fB"
-                :: Create output folder name by appending '_mod' to source folder name
+                rem Create output folder name by appending '_mod' to source folder name
                 for %%C in ("%%~fB") do call set "outFolder=%%srcFolder%%\%%~nC_mod"
             )
         )
