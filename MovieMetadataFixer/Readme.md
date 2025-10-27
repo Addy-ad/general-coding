@@ -23,7 +23,7 @@ video, audio, and subtitle streams in movie files — without re-encoding.
 ---
 
 ### 🪜 Usage
-1. Run `mmf_v1.bat`
+1. Run `ADDYad MMF.bat`
 2. Select one or more video files (`.mkv`, `.mp4`, `.mov`, etc.)
 3. Review detected track information
 4. Confirm to proceed — FFmpeg rebuilds each container
