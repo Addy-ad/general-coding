@@ -1,4 +1,4 @@
-# 🎬 Movie Metadata Fixer (MMF v1)
+# 🎬 ADDYad's Movie Metadata Fixer
 
 **Author:** ADDYad  
 **Version:** 1.0  
