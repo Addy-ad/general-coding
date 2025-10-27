@@ -3,7 +3,7 @@
 Shortly:
 A Windows batch script that extracts all audio tracks from a selected video file using FFmpeg and FFprobe.
 
-##💡 Motivation
+💡 Motivation
 This script was originally created to handle Discord recordings that contain multiple audio tracks.
 Since Discord outputs each participant’s audio as a separate track within a single video file,
 manually extracting them can be tedious.
