@@ -8,7 +8,7 @@ Set fso = CreateObject("Scripting.FileSystemObject")
 currentFolder = fso.GetParentFolderName(WScript.ScriptFullName)
 
 ' Full path to the PowerShell script
-psScript = currentFolder & "\ADDYad_Firewall_Manager.ps1"
+psScript = currentFolder & "\ADDYad Firewall Manager.ps1"
 
 ' Verify the PowerShell script exists
 If Not fso.FileExists(psScript) Then
