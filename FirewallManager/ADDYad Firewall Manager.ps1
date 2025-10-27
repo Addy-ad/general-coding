@@ -10,6 +10,10 @@
 #    - Administrator privilege auto-elevation
 # ===============================================================
 
+# Ensure consistent encoding
+[Console]::OutputEncoding = [Text.Encoding]::UTF8
+$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName Microsoft.VisualBasic
 Add-Type -AssemblyName System.Drawing
