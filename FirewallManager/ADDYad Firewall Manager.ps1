@@ -284,10 +284,10 @@ function Unblock-Programs {
         param($sender, $e)
 
         if ($e.Column -eq $sortColumn) {
-            # clicked same column again → toggle order
+            # clicked same column again -> toggle order
             $sortAscending = -not $sortAscending
         } else {
-            # new column → reset to ascending
+            # new column -> reset to ascending
             $sortColumn = $e.Column
             $sortAscending = $true
         }
