@@ -111,6 +111,13 @@ for /f "usebackq delims=" %%F in (`powershell -NoP -C "%PSCMD%"`) do (
     )
 )
 
+:: If no files were selected or picker was cancelled, exit gracefully
+if %i%==0 (
+    echo No files selected. Exiting...
+    pause
+    exit /b
+)
+
 :: Store the total number of files selected for later processing
 set "filecount=%i%"
 
