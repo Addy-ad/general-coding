@@ -1,6 +1,9 @@
 @echo off
 setlocal
 
+:: Load WinForms for MessageBox use
+powershell -NoP -C "Add-Type -AssemblyName System.Windows.Forms" >nul
+
 :: ==========================================================
 ::  PROGRAM : ADDYad's Movie Metadata Fixer (ADDYad MMF)
 ::  AUTHOR  : ADDYad
@@ -34,6 +37,8 @@ setlocal
 ::     • Uses stream copy (-c copy) - no quality loss
 ::     • Slight size changes possible due to container overhead
 :: ==========================================================
+
+:MAIN_LOOP
 
 echo ==========================================================
 echo 		Movie Metadata Fixer
@@ -153,7 +158,21 @@ endlocal
 :: Display completion message to user
 echo.
 echo All files processed!
-pause
+
+:: Ask user if they want to process more files using a PowerShell Yes/No message box
+for /f "delims=" %%A in ('powershell -NoP -C "Add-Type -AssemblyName System.Windows.Forms; $r=[System.Windows.Forms.MessageBox]::Show('Do you want to process more files?','Continue?',[System.Windows.Forms.MessageBoxButtons]::YesNo); Write-Host RESULT: $r; if ($r -eq 'Yes') {Write-Host 6} else {Write-Host 7}"') do (
+    set "answer=%%A"
+)
+
+if "%answer%"=="6" (
+    echo Restarting for next batch...
+    timeout /t 1 >nul
+    goto MAIN_LOOP
+) else (
+    echo Exiting program. Goodbye!
+    timeout /t 2 >nul
+    exit /b
+)
 
 :: Exit the main script (prevents falling into subroutines)
 goto :eof
@@ -227,6 +246,28 @@ echo ---------------------------------------------------------------------------
 :: output 3 = default flag (%%k)
 :: output 4 = language code (%%l)
 :: output 5 = title (%%m)
+:: ==========================================================
+::                      AUDIO STREAMS
+:: ==========================================================
+echo -----------------------------------------------------------------------------------------------------------------
+echo Type		Orig/Mod      	Index	Lang	Channels  Default	Title
+echo -----------------------------------------------------------------------------------------------------------------
+
+:: First pass: detect if English or Tamil audio tracks exist
+set "hasEng=0"
+set "hasTam=0"
+
+for /f "usebackq delims=" %%A in (
+    `ffprobe -v error -select_streams a ^
+    -show_entries "stream_tags=language" -of "csv=p=0" "%file%"`
+) do (
+    for /f "tokens=1 delims=," %%x in ("%%A") do (
+        if /I "%%x"=="eng" set "hasEng=1"
+        if /I "%%x"=="tam" set "hasTam=1"
+    )
+)
+
+:: Second pass: process each audio track
 set /a aidx=0
 for /f "usebackq delims=" %%A in (
     `ffprobe -v error -select_streams a ^
@@ -237,28 +278,39 @@ for /f "usebackq delims=" %%A in (
         :: Show original stream info
         if "%%k"=="1" (call set "defTxt=Yes") else (call set "defTxt=No")
         call echo Audio Track	Original	  %%aidx%%	%%l	  %%j	   %%defTxt%%		%%m
-		
-		if "%%j"=="2" (call set "chText=2.0") else if "%%j"=="6" (call set "chText=5.1") else (call set "chText=%%j%%")
-		
-        :: Set modified stream info and show
-		if /I "%%l"=="eng" (call set "defTxt=Yes" &	call set "title=English - %%chText%%"
-		) else if /I "%%l"=="tam" (call set "defTxt=No" & call set "title=Tamil - %%chText%%"
-		) else if /I "%%l"=="hin" (call set "defTxt=No" & call set "title=Hindi - %%chText%%"
-		) else (call set "defTxt=No" & call set "title=%%l%% - %%chText%%"
-		)
 
-        call echo Audio Track	Mod		  %%aidx%%	%%l	  %%j	   %%defTxt%%		%%title%%
-        
-        :: Build command for ffmpeg
-        call set "cmd=%%cmd%% -metadata:s:a:%%aidx%% title="%%title%%""
-        if /I "%%l"=="eng" (
-            call set "cmd=%%cmd%% -disposition:a:%%aidx%% default"
+        :: Channel mapping for nicer names
+        if "%%j"=="2" (call set "chText=2.0") else if "%%j"=="6" (call set "chText=5.1") else (call set "chText=%%j%%")
+
+        :: === Language-specific title mapping ===
+        if /I "%%l"=="eng" (call set "title=English - %%chText%%") ^
+        else if /I "%%l"=="tam" (call set "title=Tamil - %%chText%%") ^
+        else if /I "%%l"=="tel" (call set "title=Telugu - %%chText%%") ^
+        else if /I "%%l"=="hin" (call set "title=Hindi - %%chText%%") ^
+        else if /I "%%l"=="mal" (call set "title=Malayalam - %%chText%%") ^
+        else if /I "%%l"=="kan" (call set "title=Kannada - %%chText%%") ^
+        else (call set "title=%%l%% - %%chText%%")
+
+        :: === Default track selection ===
+        if "%hasEng%"=="1" (
+            if /I "%%l"=="eng" (set "defTxt=Yes" & call set "cmd=%%cmd%% -disposition:a:%%aidx%% default") else (set "defTxt=No" & call set "cmd=%%cmd%% -disposition:a:%%aidx%% 0")
+        ) else if "%hasTam%"=="1" (
+            if /I "%%l"=="tam" (set "defTxt=Yes" & call set "cmd=%%cmd%% -disposition:a:%%aidx%% default") else (set "defTxt=No" & call set "cmd=%%cmd%% -disposition:a:%%aidx%% 0")
         ) else (
+            set "defTxt=No"
             call set "cmd=%%cmd%% -disposition:a:%%aidx%% 0"
         )
+
+        :: Display modified info
+        call echo Audio Track	Mod		  %%aidx%%	%%l	  %%j	   %%defTxt%%		%%title%%
+
+        :: Apply metadata to command
+        call set "cmd=%%cmd%% -metadata:s:a:%%aidx%% title="%%title%%""
+
         set /a aidx+=1
     )
 )
+
 
 echo -----------------------------------------------------------------------------------------------------------------
 echo.
