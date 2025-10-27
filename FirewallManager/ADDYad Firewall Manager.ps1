@@ -380,7 +380,7 @@ function Unblock-Programs {
                 Write-Host "No matching rule found for: $name ($direction)" -ForegroundColor Yellow
             }
         } catch {
-            Write-Host "Failed to remove: $name ($direction) — $($_.Exception.Message)" -ForegroundColor Red
+            Write-Host "Failed to remove: $name ($direction) - $($_.Exception.Message)" -ForegroundColor Red
         }
     }
 
