@@ -216,8 +216,8 @@ for /f "usebackq delims=" %%A in (
 ) do (
     for /f "tokens=1,2,3 delims=," %%i in ("%%A") do (
 		:: Show original stream info
-        if "%%j"=="1" (call set "defTxt=Yes") else (call set "defTxt=No")
-		call echo Video Track	Original	  %%i       %%defTxt%%      %%k
+        if "%%j"=="1" (call set "origDefTxt=Yes") else (call set "origDefTxt=No")
+		call echo Video Track	Original	  %%i       %%origDefTxt%%      %%k
 		
 		:: Set modified stream info and show
 		if "%%i"=="0" (call set "defTxt=Yes") else (call set "defTxt=No")
@@ -276,8 +276,8 @@ for /f "usebackq delims=" %%A in (
 ) do (
     for /f "tokens=1,2,3,4,5 delims=," %%i in ("%%A") do (
         :: Show original stream info
-        if "%%k"=="1" (call set "defTxt=Yes") else (call set "defTxt=No")
-        call echo Audio Track	Original	  %%aidx%%	%%l	  %%j	   %%defTxt%%		%%m
+        if "%%k"=="1" (call set "origDefTxt=Yes") else (call set "origDefTxt=No")
+        call echo Audio Track	Original	  %%aidx%%	%%l	  %%j	   %%origDefTxt%%		%%m
 
         :: Channel mapping for nicer names
         if "%%j"=="2" (call set "chText=2.0") else if "%%j"=="6" (call set "chText=5.1") else (call set "chText=%%j%%")
@@ -337,36 +337,31 @@ for /f "usebackq delims=" %%A in (
     "%file%"`
 ) do (
     for /f "tokens=1,2,3,4 delims=," %%i in ("%%A") do (
-	
-		:: Show original stream info
-        if "%%j"=="1" (call set "defTxt=Yes") else (call set "defTxt=No")
-        call echo Sub Track	Original	  %%sidx%%	 %%k      %%defTxt%%		%%l
 		
-		:: Set modified stream info and show
-			if /I "%%k"=="eng" (
-				set /a engCount+=1
-				if %engCount% LEQ 1 (call set "cmd=%%cmd%% -disposition:s:%%sidx%% default" & set "defTxt=Yes") else (set "defTxt=No")
-				if %engCount% GTR 1 (call set "title=English %%engCount%%") else (set "title=English")
-			) else if /I "%%k"=="tam" (set "defTxt=No" & set "title=Tamil"
-			) else if /I "%%k"=="tel" (set "defTxt=No" & set "title=Telugu"  
-			) else if /I "%%k"=="hin" (set "defTxt=No" & set "title=Hindi"
-			) else if /I "%%k"=="ml" (set "defTxt=No" & set "title=Malayalam"
-			) else (set "defTxt=No" & call set "title=%%k"
-			)
+		if "%%j"=="1" (call set "origDefTxt=Yes") else (call set "origDefTxt=No")
+        call echo Sub Track	Original	  %%sidx%%	 %%k      %%origDefTxt%%		%%l
+		
+		if /I "%%k"=="eng" (
+			call :ProcessEnglishSubtitle "%%sidx%%" "%%j" "%%k" "%%l"
+		) else (
+			call :ProcessOtherLanguageSubtitle "%%sidx%%" "%%k" "%%l"
+		)
 		call echo Sub Track	Mod	  	  %%sidx%%	 %%k      %%defTxt%%		%%title%%
-		
-		:: Build command for ffmpeg
-		call set "cmd=%%cmd%% -metadata:s:s:%%sidx%% title="%%title%%""
 		
 		set /a sidx+=1
     )
 )
+
 echo -----------------------------------------------------------------------------------------------------------------
 echo.
+
+call set "cmd=%%cmd%% -metadata comment="Processed_by_ADDYad_MMF""
 
 :: Append the output file path to the FFmpeg command
 :: This completes the command structure: ffmpeg [options] input_file output_file
 call set "cmd=%%cmd%% "%%outfile%%""
+
+:: call echo %%cmd%%
 
 echo Press a key to confirm changes to proceed with ffmpeg
 pause >nul
@@ -388,3 +383,49 @@ exit /b
 :: pushd "%~dp0"
 :: cmd /k
 :: exit
+
+:ProcessEnglishSubtitle
+rem %1 = sidx (subtitle index)
+rem %2 = disposition flag
+rem %3 = language
+rem %4 = title
+
+call set /a engCount=%%engCount%%+1
+call set "engCountNum=%engCount%"
+
+:: echo Processing English subtitle #%engCountNum% (stream index %~1)
+
+if "%engCountNum%"=="1" (
+    rem first English subtitle -> default
+    set "defTxt=Yes"
+    set "title=English"
+    call set "cmd=%%cmd%% -disposition:s:%~1 default"
+) else (
+    rem additional English subtitle -> non-default
+    set "defTxt=No"
+    call set "title=English %engCountNum%"
+    call set "cmd=%%cmd%% -disposition:s:%~1 0"
+)
+
+call set "cmd=%%cmd%% -metadata:s:s:%~1 title="%%title%%""
+goto :eof
+
+:ProcessOtherLanguageSubtitle
+rem %1 = sidx
+rem %2 = language
+rem %3 = original title
+
+set "defTxt=No"
+
+if /I "%~2"=="tam" (set "title=Tamil")
+if /I "%~2"=="tel" (set "title=Telugu")
+if /I "%~2"=="hin" (set "title=Hindi")
+if /I "%~2"=="ml"  (set "title=Malayalam")
+if /I "%~2"=="kan" (set "title=Kannada")
+if /I not "%~2"=="tam" if /I not "%~2"=="tel" if /I not "%~2"=="hin" if /I not "%~2"=="ml" if /I not "%~2"=="kan" (
+    call set "title=%~3"
+)
+
+call set "cmd=%%cmd%% -disposition:s:%~1 0"
+call set "cmd=%%cmd%% -metadata:s:s:%~1 title="%%title%%""
+goto :eof
