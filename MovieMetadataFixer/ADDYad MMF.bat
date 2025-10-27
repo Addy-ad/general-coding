@@ -2,7 +2,7 @@
 setlocal
 
 :: ==========================================================
-::  PROGRAM : Movie Metadata Fixer (MMF)
+::  PROGRAM : ADDYad's Movie Metadata Fixer (ADDYad MMF)
 ::  AUTHOR  : ADDYad
 ::  VERSION : 1.0
 ::  DATE    : 21-Oct-2025
