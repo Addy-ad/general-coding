@@ -75,7 +75,7 @@ echo.
 :: allowing users to select multiple video files through a familiar Windows interface.
 set "PSCMD=[void][System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms');"
 set "PSCMD=%PSCMD% $dlg=New-Object System.Windows.Forms.OpenFileDialog;"
-set "PSCMD=%PSCMD% $dlg.Filter=('Video files','*.mkv;*.mp4;*.mov;*.avi;*.webm','All files','*.*' -join '^|');"
+set "PSCMD=%PSCMD% $dlg.Filter=('Video files','*.mkv;*.mp4;*.mov;*.avi;*.webm','All files','*.*' -join '|');"
 set "PSCMD=%PSCMD% $dlg.Multiselect=$true;"
 set "PSCMD=%PSCMD% if($dlg.ShowDialog() -eq 'OK'){ $dlg.FileNames }"
 
