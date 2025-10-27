@@ -355,8 +355,6 @@ for /f "usebackq delims=" %%A in (
 echo -----------------------------------------------------------------------------------------------------------------
 echo.
 
-call set "cmd=%%cmd%% -metadata comment="Processed_by_ADDYad_MMF""
-
 :: Append the output file path to the FFmpeg command
 :: This completes the command structure: ffmpeg [options] input_file output_file
 call set "cmd=%%cmd%% "%%outfile%%""
