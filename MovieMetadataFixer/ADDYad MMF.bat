@@ -510,7 +510,7 @@ if "%~1"=="27" (
         )
     )
     call :exitAnimation
-    exit /b 0 & exit
+    exit
 ) else if "%~1"=="83" (
     :: S key (83) - Skip current file only
     echo Skipping this file.
