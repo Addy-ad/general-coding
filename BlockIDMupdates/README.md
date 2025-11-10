@@ -9,27 +9,14 @@
 
 ## Overview
 
-**ADDYad Block IDM Updates** is a PowerShell utility designed to prevent *Internet Download Manager (IDM)* from performing unwanted update checks.  
-It automatically detects IDM’s installation path, resolves its update servers, removes any old conflicting firewall rules, and creates a new Windows Firewall rule to block those update IPs — all without affecting normal download functionality.
-
----
-
-## Features
-
-- Detects IDM automatically in `Program Files` or `Program Files (x86)`  
-- Option to manually locate `IDMan.exe` if not found  
-- Performs live DNS resolution of IDM’s update servers  
-- Removes existing outdated or duplicate firewall rules  
-- Creates a fresh outbound block rule with the current update IPs  
-- Uses native Windows tools (`netsh`) for compatibility and reliability  
-- Runs entirely locally — no internet dependencies  
+**ADDYad Block IDM Updates** is a PowerShell utility designed to prevent *Internet Download Manager (IDM)* from performing unwanted update checks. It automatically detects IDM’s installation path, resolves its update servers, removes any old conflicting firewall rules, and creates a new Windows Firewall rule to block those update IPs — all without affecting normal download functionality.
 
 ---
 
 ## How It Works
 
 1. **Detects IDM**  
-   Searches common install directories for `IDMan.exe`. If not found, prompts you to locate it manually.
+   Searches common install directories in `Program Files` or `Program Files (x86)` for `IDMan.exe`. If not found, prompts you to locate it manually.
 
 2. **Resolves Update Servers**  
    Performs DNS lookups for the following domains:  
