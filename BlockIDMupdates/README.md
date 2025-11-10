@@ -65,6 +65,7 @@ It automatically detects IDM’s installation path, resolves its update servers,
 
 ## Usage
 
+Download the 2 scripts into a folder.
 Double-click **`Run_ps1_script.vbs`** to launch the **`ADDYad_Block_IDM_Updates.ps1`** script.  
 
 If **`IDMan.exe`** is not found in the default installation paths  
