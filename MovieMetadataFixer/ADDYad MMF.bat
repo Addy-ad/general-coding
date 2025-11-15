@@ -7,8 +7,8 @@ powershell -NoP -C "Add-Type -AssemblyName System.Windows.Forms" >nul
 :: ==========================================================
 ::  PROGRAM 	: ADDYad's Movie Metadata Fixer (ADDYad MMF)
 ::  AUTHOR  	: ADDYad
-::  VERSION 	: 1.0
-::  CREATE DATE	: 21-Oct-2025
+::  VERSION 	: 2.0
+::  CREATE DATE	: 15-Nov-2025
 ::  UPDATE DATE	: 30-Oct-2025
 :: ----------------------------------------------------------
 ::  DESCRIPTION :
@@ -233,6 +233,42 @@ echo.
 call set "cmd=ffmpeg -hide_banner -loglevel warning -i "%%file%%" -map 0 -c copy -stats"
 
 :: ==========================================================
+::                      MAIN TITLE (Thanks to u/ithcy)
+:: ==========================================================
+echo -----------------------------------------------------------------------------------------------------------------
+echo Container Title
+echo -----------------------------------------------------------------------------------------------------------------
+
+set "maintitleChange="
+
+rem Get the current container title using FFprobe
+for /f "usebackq delims=" %%A in (
+    `ffprobe -v error -show_entries "format_tags=title" -of "default=noprint_wrappers=1:nokey=1" "%file%"`
+) do (
+    set "origMainTitle=%%A"
+)
+
+rem If ffprobe returned nothing, set it as empty
+if not defined origMainTitle set "origMainTitle=(none)"
+
+echo Original title: %origMainTitle%
+echo New title:      %fname%
+
+rem Compare and mark if changed
+call :CompareTitles "%origMainTitle%" "%fname%"
+if errorlevel 1 set "maintitleChange=1"
+
+rem Update ffmpeg command with new container title
+call set "cmd=%%cmd%% -metadata title="%%fname%%""
+
+echo -----------------------------------------------------------------------------------------------------------------
+echo.
+
+if defined maintitleChange (echo maintitleChange changed) else (echo maintitleChange not changed)
+
+echo.
+
+:: ==========================================================
 ::                      VIDEO STREAMS
 :: ==========================================================
 echo -----------------------------------------------------------------------------------------------------------------
@@ -286,7 +322,6 @@ echo ---------------------------------------------------------------------------
 echo.
 
 if defined videoChange (echo videoChange changed) else (echo videoChange not changed)
-echo.
 echo.
 
 :: ==========================================================
@@ -382,7 +417,7 @@ echo.
 if defined audioChange (echo audioChange changed) else (echo audioChange not changed)
 
 echo.
-echo.
+
 :: ==========================================================
 ::                      SUBTITLE STREAMS
 :: ==========================================================
@@ -438,7 +473,7 @@ echo.
 :: This completes the command structure: ffmpeg [options] input_file output_file
 call set "cmd=%%cmd%% "%%outfile%%""	
 
-if not defined videoChange if not defined audioChange if not defined subsChange (
+if not defined videoChange if not defined audioChange if not defined subsChange if not defined maintitleChange (
     echo no changes detected. Skipping file automatically..
     exit /b
 )
@@ -518,6 +553,8 @@ if "%~1"=="27" (
 ) else (
     :: Any other key - Process current file with FFmpeg
     echo Running FFmpeg...
+	echo %cmd%
+	:: pause
     %cmd%
     if not errorlevel 1 if not "%~2"=="" call set "%~2=1"
     exit /b
