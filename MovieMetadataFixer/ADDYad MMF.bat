@@ -26,6 +26,7 @@ powershell -NoP -C "Add-Type -AssemblyName System.Windows.Forms" >nul
 ::     • Deletes the _mod folder if every file is skipped
 ::     • Supports replacing originals after processing (optional prompt)
 ::     • Output uses stream copy (-c copy) = no quality loss
+::     • Preserves original file's time created, accessed and modified metadata
 ::
 ::  USAGE :
 ::     1. Run ADDYad MMF.bat
@@ -174,6 +175,12 @@ goto :postProcess
 
 :postProcess
 :: Display completion message to user
+set "PSMSG=Replace original files with processed versions?`nThis will overwrite the originals."
+set "PSCMD=Add-Type -AssemblyName System.Windows.Forms; "
+set "PSCMD=%PSCMD% $msg=\"%PSMSG%\"; "
+set "PSCMD=%PSCMD% $r=[System.Windows.Forms.MessageBox]::Show($msg, \"Replace?\", 4); "
+set "PSCMD=%PSCMD% if($r -eq 'Yes'){Write-Host YES}else{Write-Host NO}"
+
 if not defined processedAny (
 	if defined createdOutFolder (
 		echo All files skipped - cleaning up output folder "%outFolder%"
@@ -184,9 +191,7 @@ if not defined processedAny (
 	echo All files processed!
     echo.
     echo Replace original files with processed ones?
-    for /f "delims=" %%A in (
-        'powershell -NoP -C "Add-Type -AssemblyName System.Windows.Forms; $r=[System.Windows.Forms.MessageBox]::Show('Replace original files with processed versions?`n This will overwrite the originals.','Replace?',4); if($r -eq 'Yes'){Write-Host YES}else{Write-Host NO}"'
-    ) do set "replaceAnswer=%%A"
+    for /f "delims=" %%A in ('powershell -NoP -Command "%PSCMD%"') do set "replaceAnswer=%%A"
 
     if /I "%replaceAnswer%"=="YES" (
         echo Replacing originals...
@@ -205,7 +210,14 @@ if not defined processedAny (
 )
 
 :: Ask user if they want to process more files using a PowerShell Yes/No message box
-for /f "delims=" %%A in ('powershell -NoP -C "Add-Type -AssemblyName System.Windows.Forms; $r=[System.Windows.Forms.MessageBox]::Show('Do you want to process more files?','Continue?',[System.Windows.Forms.MessageBoxButtons]::YesNo); Write-Host RESULT: $r; if ($r -eq 'Yes') {Write-Host 6} else {Write-Host 7}"') do (
+set "PSASK=Add-Type -AssemblyName System.Windows.Forms;"
+set "PSASK=%PSASK% $r=[System.Windows.Forms.MessageBox]::Show("
+set "PSASK=%PSASK% \"Do you want to process more files?\","
+set "PSASK=%PSASK% \"Continue?\","
+set "PSASK=%PSASK% [System.Windows.Forms.MessageBoxButtons]::YesNo);"
+set "PSASK=%PSASK% if ($r -eq 'Yes') {Write-Host 6} else {Write-Host 7}"
+
+for /f "delims=" %%A in ('powershell -NoP -C "%PSASK%"') do (
     set "answer=%%A"
 )
 
@@ -519,7 +531,7 @@ if not defined %~6 (
     set "keyCode=0"
 )
 
-call :HandleKey "%%keyCode%%" "%~5" "%~4"
+call :HandleKey "%%keyCode%%" "%~5" "%~4" "%file%" "%outfile%"
 
 goto :eof
 
@@ -550,6 +562,8 @@ exit /b 0
 :: %~1 = Virtual key code from PowerShell ReadKey
 :: %~2 = Name of variable to mark if any file was processed ("processedAny")
 :: %~3 = Name of variable to track if output folder was created ("createdOutFolder")
+:: %~4 = file
+:: %~5 = outfile
 
 if "%~1"=="27" (
     :: Escape key (27) - Cancel entire operation
@@ -571,6 +585,10 @@ if "%~1"=="27" (
     echo Running FFmpeg...
 	echo %cmd%
     %cmd%
+	
+	rem Copy original timestamps to the newly created output file
+	powershell -NoP -C "& {$original = Get-Item '%~4'; $new = Get-Item '%~5'; $new.CreationTime = $original.CreationTime; $new.LastWriteTime = $original.LastWriteTime; $new.LastAccessTime = $original.LastAccessTime}"
+	
     if not errorlevel 1 if not "%~2"=="" call set "%~2=1"
     exit /b
 )
