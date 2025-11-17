@@ -8,48 +8,42 @@ powershell -NoP -C "Add-Type -AssemblyName System.Windows.Forms" >nul
 ::  PROGRAM 	: ADDYad's Movie Metadata Fixer (ADDYad MMF)
 ::  AUTHOR  	: ADDYad
 ::  VERSION 	: 2.0
-::  CREATE DATE	: 15-Nov-2025
+::  CREATE DATE	: 17-Nov-2025
 ::  UPDATE DATE	: 30-Oct-2025
 :: ----------------------------------------------------------
 ::  DESCRIPTION :
-::     ADDYad MMF is an intelligent batch utility that automates
-::     metadata correction for video containers using FFmpeg and FFprobe.
-::     It analyzes all video, audio, and subtitle streams and rebuilds
-::     each file with properly standardized metadata - no re-encoding.
+::     ADDYad MMF is a batch-based metadata repair tool for MKV/MP4/MOV files.
+::     It uses FFprobe to read all stream metadata and rebuilds each file with
+::     corrected titles, language tags, and default-track flags. No re-encoding.
 ::
 ::  KEY FEATURES :
-::     • Automatic detection and correction of:
-::          - Track titles
-::          - Language tags (eng, tam, tel, hin, mal, kan, etc.)
-::          - Default track flags per type (video, audio, subtitle)
-::     • Smart “Yes to All” and “Skip” logic for batch confirmation
-::     • PowerShell-based file picker for multi-file selection
-::     • Auto-creates organized output folder (<source>_mod)
-::     • Cleans up empty output folder if all files are skipped
-::     • Detects and handles multi-language audio tracks intelligently
-::     • Human-readable log-style console output for each stream type
-::     • Preserves original quality (stream copy mode: -c copy)
-::     • Pure batch implementation - no delayed expansion required
+::     • Auto-fixes container title, video titles, audio titles, subtitle titles
+::     • Normalizes language codes (eng, tam, tel, hin, mal/ml, kan, etc.)
+::     • Sets correct default track per type (video/audio/subtitle)
+::     • "Skip", "Yes to All", and "Cancel" logic for batch processing
+::     • PowerShell file picker for multi-file selection
+::     • Creates a <source>_mod folder automatically
+::     • Deletes the _mod folder if every file is skipped
+::     • Supports replacing originals after processing (optional prompt)
+::     • Output uses stream copy (-c copy) = no quality loss
 ::
 ::  USAGE :
 ::     1. Run ADDYad MMF.bat
-::     2. Select media files (.mkv, .mp4, .mov, etc.)
-::     3. Script analyzes metadata using FFprobe
-::     4. Confirms actions (Close / Skip / Yes to All / Continue)
-::     4. FFmpeg rebuilds containers with corrected metadata
-::     5. Modified files saved in: <source>_mod\ folder
+::     2. Select media files (mkv/mp4/mov/etc)
+::     3. Metadata is analyzed using FFprobe
+::     4. You confirm per-file or apply "Yes to All"
+::     5. Corrected files are written to <source>_mod\
+::     6. Optionally replace originals with the processed files
 ::
 ::  REQUIREMENTS :
-::     • FFmpeg & FFprobe must be available in PATH
-::       (Install with:  winget install --id=Gyan.FFmpeg -e)
+::     • FFmpeg + FFprobe in PATH
+::     • Windows PowerShell available (for GUI picker + message boxes)
 ::
 ::  NOTES :
-::     • All processing uses stream copy (no re-encoding)
-::     • Minor size differences may occur due to container overhead
-::     • Tested with MKV format
+::     • All operations use -c copy (no transcoding)
+::     • File timestamps are not preserved unless restored manually
+::     • Output format is currently set to MKV 
 :: ==========================================================
-
-:MAIN_LOOP
 
 echo ==========================================================
 echo 		Movie Metadata Fixer
@@ -87,6 +81,8 @@ if errorlevel 1 (
 
 echo FFmpeg and FFprobe detected successfully.
 echo.
+
+:MAIN_LOOP
 
 :: --- STEP 1. PowerShell File Picker ---
 :: This step builds a PowerShell command to display a graphical file selection dialog
@@ -132,7 +128,7 @@ for /f "usebackq delims=" %%F in (`powershell -NoP -C "%PSCMD%"`) do (
 :: If no files were selected or picker was cancelled, exit gracefully
 if %i%==0 (
     echo No files selected. Exiting...
-    pause
+	call :exitAnimation
     exit /b
 )
 
@@ -186,6 +182,26 @@ if not defined processedAny (
 ) else (
 	echo.
 	echo All files processed!
+    echo.
+    echo Replace original files with processed ones?
+    for /f "delims=" %%A in (
+        'powershell -NoP -C "Add-Type -AssemblyName System.Windows.Forms; $r=[System.Windows.Forms.MessageBox]::Show('Replace original files with processed versions?`n This will overwrite the originals.','Replace?',4); if($r -eq 'Yes'){Write-Host YES}else{Write-Host NO}"'
+    ) do set "replaceAnswer=%%A"
+
+    if /I "%replaceAnswer%"=="YES" (
+        echo Replacing originals...
+        for /f "delims=" %%F in ('dir /b "%outFolder%"') do (
+            echo Moving "%outFolder%\%%F"  ->  "%srcFolder%\%%F"
+            move /y "%outFolder%\%%F" "%srcFolder%\%%F" >nul
+        )
+
+        echo Removing mod folder...
+        rd /s /q "%outFolder%" 2>nul
+        echo Done replacing.
+    ) else (
+        echo Originals left untouched.
+    )
+
 )
 
 :: Ask user if they want to process more files using a PowerShell Yes/No message box
@@ -382,7 +398,7 @@ for /f "usebackq delims=" %%A in (
 				set "defTxt=Yes" & call set "cmd=%%cmd%% -disposition:a:%%aidx%% default"
 			) else (
 			set "defTxt=No" & call set "cmd=%%cmd%% -disposition:a:%%aidx%% 0"
-			)
+			) 
         ) else if "%hasTam%"=="1" (
             if /I "%%l"=="tam" (
 				set "defTxt=Yes" & call set "cmd=%%cmd%% -disposition:a:%%aidx%% default"
@@ -554,7 +570,6 @@ if "%~1"=="27" (
     :: Any other key - Process current file with FFmpeg
     echo Running FFmpeg...
 	echo %cmd%
-	:: pause
     %cmd%
     if not errorlevel 1 if not "%~2"=="" call set "%~2=1"
     exit /b
@@ -592,14 +607,16 @@ rem %~2 = Language code (tam, tel, hin, etc.)
 rem %~3 = Original title text
 set "defTxt=No"
 
+set "knownLang="
+
 :: Map common language codes to full language names
-if /I "%~2"=="tam" (set "title=Tamil")
-if /I "%~2"=="tel" (set "title=Telugu") 
-if /I "%~2"=="hin" (set "title=Hindi")
-if /I "%~2"=="mal"  (set "title=Malayalam")
-if /I "%~2"=="kan" (set "title=Kannada")
-if /I not "%~2"=="tam" if /I not "%~2"=="tel" if /I not "%~2"=="hin" if /I not "%~2"=="ml" if /I not "%~2"=="kan" (
-    :: For unknown languages, keep the original title
+if /I "%~2"=="tam" (set "title=Tamil")		& set knownLang=1
+if /I "%~2"=="tel" (set "title=Telugu")		& set knownLang=1
+if /I "%~2"=="hin" (set "title=Hindi")		& set knownLang=1
+if /I "%~2"=="mal" (set "title=Malayalam")	& set knownLang=1
+if /I "%~2"=="kan" (set "title=Kannada")	& set knownLang=1
+
+if not defined knownLang (
     call set "title=%~3"
 )
 
