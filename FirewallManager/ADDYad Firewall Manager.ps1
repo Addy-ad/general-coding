@@ -44,6 +44,11 @@ public class ListViewItemComparer : IComparer {
 }
 "@
 
+$Host.UI.RawUI.BackgroundColor = 'Black'
+$Host.UI.RawUI.ForegroundColor = 'White'
+$container = [ConsoleColor]::Black
+[Console]::BackgroundColor = $container
+[Console]::Clear()
 
 # --- Theme Detection ---
 function Get-WindowsTheme {
@@ -190,16 +195,19 @@ function Block-Programs {
                             -Profile Any `
                             -Description "Blocking internet access for $name"
 
-                        [System.Windows.Forms.MessageBox]::Show("Firewall rule created for '$name'.",
-                            "Rule Added",
-                            [System.Windows.Forms.MessageBoxButtons]::OK,
-                            [System.Windows.Forms.MessageBoxIcon]::Information)
+                        Write-Host "Firewall rule created for '$name'" -ForegroundColor Green
+
+                        # [System.Windows.Forms.MessageBox]::Show("Firewall rule created for '$name'.",
+                        #     "Rule Added",
+                        #     [System.Windows.Forms.MessageBoxButtons]::OK,
+                        #     [System.Windows.Forms.MessageBoxIcon]::Information)
                     }
                 } catch {
-                    [System.Windows.Forms.MessageBox]::Show("Failed to create firewall rule for $name. Check permissions.",
-                        "Error",
-                        [System.Windows.Forms.MessageBoxButtons]::OK,
-                        [System.Windows.Forms.MessageBoxIcon]::Error)
+                    # [System.Windows.Forms.MessageBox]::Show("Failed to create firewall rule for $name. Check permissions.",
+                    #     "Error",
+                    #     [System.Windows.Forms.MessageBoxButtons]::OK,
+                    #     [System.Windows.Forms.MessageBoxIcon]::Error)
+                    Write-Host "Failed to create rule for $name" -ForegroundColor Red
                 }
             }
         } else {
