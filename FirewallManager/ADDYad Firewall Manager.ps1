@@ -232,10 +232,30 @@ function Unblock-Programs {
     $themeColors = Get-ThemeColors
     
     # Get both inbound and outbound blocking rules
-    $blocked = Get-NetFirewallRule -Action Block |
-        Where-Object { $_.DisplayName -match '^(Block|.*Block ).*' }
-
-    if (-not $blocked) {
+    try {
+        $blocked = Get-NetFirewallRule -Action Block -ErrorAction Stop |
+            Where-Object { $_.DisplayName -match '^(Block|.*Block ).*' }
+    }
+    catch {
+        # Check if it's the "no rules found" error
+        if ($_.Exception.Message -like "*ObjectNotFound*" -or 
+            $_.Exception.Message -like "*no MSFT_NetFirewallRule objects*") {
+            # This is just "no rules exist" - handle silently
+            $blocked = $null
+        }
+        else {
+            # Real error - show to user
+            [System.Windows.Forms.MessageBox]::Show(
+                "Error accessing firewall rules: $($_.Exception.Message)",
+                "Error",
+                [System.Windows.Forms.MessageBoxButtons]::OK,
+                [System.Windows.Forms.MessageBoxIcon]::Error
+            )
+            return
+        }
+    }
+    
+    if (-not $blocked -or $blocked.Count -eq 0) {
         [System.Windows.Forms.MessageBox]::Show("No blocked programs found.",
             "Info",
             [System.Windows.Forms.MessageBoxButtons]::OK,
