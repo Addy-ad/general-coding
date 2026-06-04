@@ -1,0 +1,57 @@
+! ==============================================================================
+! GEMINI UI TWEAKS: LAYOUT & WIDTH
+! ==============================================================================
+! Force conversation and input areas to respect a 100px right-hand buffer.
+gemini.google.com##.conversation-container:style(max-width: calc(100% - 100px) !important;)
+gemini.google.com##.input-area-container:style(max-width: calc(100% - 100px) !important;)
+
+! Customize the main chat background: Dark grey theme with rounded corners.
+gemini.google.com##.container:style(background-color: #1F1F1F !important; padding: 30px !important; border-radius: 50px !important; max-width: 85% !important;)
+
+! ==============================================================================
+! CHAT BUBBLES & INPUT AREA
+! ==============================================================================
+! Force user messages to expand fully to the container width.
+gemini.google.com##user-query:style(max-width: 100% !important; width: 100% !important;)
+gemini.google.com##.user-query-container:style(max-width: 100% !important; width: 100% !important;)
+
+! Apply a custom Forest Green theme to user chat bubbles.
+gemini.google.com##.user-query-bubble-with-background:style(background-color: #1a4d2e !important; border: 1px solid #2d5a3f !important; border-radius: 50px !important;)
+
+! Remove the default gradient/fade-out effect behind the input bar.
+gemini.google.com##input-container:style(background: none !important;)
+gemini.google.com##input-container::before:style(background: none !important;)
+gemini.google.com##.luminous-expand-fade:style(background: none !important;)
+
+! ==============================================================================
+! CONTENT, CODE & TABLES
+! ==============================================================================
+! Enforce a pure black background for code blocks and rich content.
+gemini.google.com##.content-container:style(background-color: black !important; border-radius: 10px !important;)
+gemini.google.com##.formatted-code-block-internal-container:style(background-color: black !important; border-radius: 10px !important;)
+gemini.google.com##code:style(background-color: black !important; border-radius: 10px !important;)
+
+! Add a white border for images and attachments.
+gemini.google.com##.preview-image-button:style(border: 2px solid #ffffff !important;)
+gemini.google.com##.new-file-preview-container:style(border: 2px solid #ffffff !important;)
+
+! Fix table layout: Remove gradient blurs and ensure full content visibility.
+gemini.google.com##.table-block:style(max-width: 80% !important; margin-left: 0% !important; margin-right: auto !important;)
+gemini.google.com##.table-block-component:style(display: block !important; overflow-x: visible !important;)
+gemini.google.com##.horizontal-scroll-wrapper:style(display: block !important; overflow-x: visible !important;)
+gemini.google.com##.table-content:style(mask-image: none !important;)
+
+! Style for specific "Expanded" UI states (Dark Red theme).
+gemini.google.com##.user-query-bubble-with-background.luminous-expanded:style(background-color: #530000 !important; border: 1px solid #530000 !important;)
+! ==============================================================================
+! SIDEBAR & UI CLEANUP
+! ==============================================================================
+! Remove non-essential UI elements like disclaimers and specific activity controls.
+gemini.google.com##.youtube.attachment-container
+gemini.google.com##.hallucination-disclaimer
+gemini.google.com##.footer-container
+gemini.google.com##gem-nav-list-item[data-test-id="desktop-bard-activity-control"]
+
+! Custom Sidebar Colors: Style headers and content containers for better organization.
+gemini.google.com##button[data-test-id="expandable-section-toggle"]:style(background-color: #660101 !important;)
+gemini.google.com##div[data-test-id="expandable-section-content"]:style(background-color: #475c59 !important;)
