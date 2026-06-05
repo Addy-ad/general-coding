@@ -2,11 +2,11 @@
 ! GEMINI UI TWEAKS: LAYOUT & WIDTH
 ! ==============================================================================
 ! Force conversation and input areas to respect a 100px right-hand buffer.
-gemini.google.com##.conversation-container:style(max-width: calc(100% - 100px) !important;)
-gemini.google.com##.input-area-container:style(max-width: calc(100% - 100px) !important;)
+gemini.google.com##:matches-path(/^/app\/.+/) .conversation-container:style(max-width: calc(100% - 100px) !important;)
+gemini.google.com##:matches-path(/^/app\/.+/) .input-area-container:style(max-width: calc(100% - 100px) !important;)
 
 ! Customize the main chat background: Dark grey theme with rounded corners.
-gemini.google.com##.container:style(background-color: #1F1F1F !important; padding: 30px !important; border-radius: 50px !important; max-width: 85% !important;)
+gemini.google.com##:matches-path(/^/app\/.+/) .conversation-container .container:style(background-color: #1F1F1F !important; padding: 30px !important; border-radius: 50px !important; max-width: 85% !important;)
 
 ! ==============================================================================
 ! CHAT BUBBLES & INPUT AREA
@@ -27,7 +27,7 @@ gemini.google.com##.luminous-expand-fade:style(background: none !important;)
 ! CONTENT, CODE & TABLES
 ! ==============================================================================
 ! Enforce a pure black background for code blocks and rich content.
-gemini.google.com##.content-container:style(background-color: black !important; border-radius: 10px !important;)
+gemini.google.com##:matches-path(/^/app\/.+/) .content-container:style(background-color: black !important; border-radius: 10px !important;)
 gemini.google.com##.formatted-code-block-internal-container:style(background-color: black !important; border-radius: 10px !important;)
 gemini.google.com##code:style(background-color: black !important; border-radius: 10px !important;)
 
