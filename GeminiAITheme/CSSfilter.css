@@ -1,0 +1,117 @@
+/* Tested with "Live editor for CSS, Less & Sass - Magic CSS" Chrom extension. URL:
+https://chromewebstore.google.com/detail/live-editor-for-css-less/ifhikkcafabcgolfjegfcgloomalapol
+*/
+
+/* ==============================================================================
+   LAYOUT & WIDTH (Scoped to app views)
+   ============================================================================== */
+body:has(.conversation-container) {
+    .conversation-container {
+        max-width: calc(100% - 100px) !important;
+
+        .container {
+            background-color: #1F1F1F !important;
+            padding: 30px !important;
+            border-radius: 50px !important;
+            max-width: 85% !important;
+        }
+    }
+    .input-area-container {
+        max-width: calc(100% - 100px) !important;
+    }
+}
+
+/* ==============================================================================
+   CHAT BUBBLES & INPUT AREA
+   ============================================================================== */
+user-query {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+.user-query-container {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+.user-query-bubble-with-background {
+    background-color: #1a4d2e !important;
+    border: 1px solid #2d5a3f !important;
+    border-radius: 50px !important;
+
+    &.luminous-expanded {
+        background-color: #530000 !important;
+        border: 1px solid #530000 !important;
+    }
+}
+input-container {
+    background: none !important;
+    &::before {
+        background: none !important;
+    }
+}
+.luminous-expand-fade {
+    background: none !important;
+}
+
+/* ==============================================================================
+   CONTENT, CODE & TABLES
+   ============================================================================== */
+.content-container {
+    background-color: black !important;
+    border-radius: 10px !important;
+}
+.formatted-code-block-internal-container {
+    background-color: black !important;
+    border-radius: 10px !important;
+}
+code {
+    background-color: black !important;
+    border-radius: 10px !important;
+}
+.preview-image-button {
+    border: 2px solid #ffffff !important;
+}
+.new-file-preview-container {
+    border: 2px solid #ffffff !important;
+}
+.table-block {
+    max-width: 80% !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+.table-block-component {
+    display: block !important;
+    overflow-x: visible !important;
+}
+.horizontal-scroll-wrapper {
+    display: block !important;
+    overflow-x: visible !important;
+}
+.table-content {
+    mask-image: none !important;
+}
+
+/* ==============================================================================
+   SIDEBAR & UI CLEANUP
+   ============================================================================== */
+.youtube.attachment-container,
+.hallucination-disclaimer,
+.footer-container,
+gem-nav-list-item[data-test-id="desktop-bard-activity-control"] {
+    display: none !important;
+}
+button[data-test-id="expandable-section-toggle"] {
+    background-color: #660101 !important;
+}
+div[data-test-id="expandable-section-content"] {
+    background-color: #475c59 !important;
+}
+
+/* Add to notebook box */
+.lumi-dialog{
+    width: 20% !important;
+    max-width: 90vw !important;
+    height: 80% !important;
+    max-height: 85vh !important;
+    position: fixed !important; /* Anchor position to the left edge of the main container */
+    left: calc(280px + 50px) !important; /* 280px sidebar width + 50px offset */
+}
