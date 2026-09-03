@@ -22,6 +22,28 @@ body:has(.conversation-container) {
 }
 
 /* ==============================================================================
+   FIX: Gemini response alignment
+   ============================================================================== */
+.response-container-header {
+    margin-left: 0 !important;
+    max-width: 85% !important;
+}
+
+.message-content,
+.markdown > * {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+message-actions,
+.response-container-footer {
+    max-width: 94% !important;
+    margin-left: 0 !important;
+}
+
+/* ==============================================================================
    CHAT BUBBLES & INPUT AREA
    ============================================================================== */
 user-query {
