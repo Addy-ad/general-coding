@@ -2,8 +2,17 @@
 ! LAYOUT & WIDTH
 ! ==============================================================================
 gemini.google.com##:matches-path(/^/app\/.+/) .conversation-container:style(max-width: calc(100% - 100px) !important;)
-gemini.google.com##:matches-path(/^/app\/.+/) .input-area-container:style(max-width: calc(100% - 100px) !important;)
 gemini.google.com##:matches-path(/^/app\/.+/) .conversation-container .container:style(background-color: #1F1F1F !important; padding: 30px !important; border-radius: 50px !important; max-width: 85% !important;)
+gemini.google.com##:matches-path(/^/app\/.+/) .input-area-container:style(max-width: calc(100% - 100px) !important;)
+
+! ==============================================================================
+! FIX: Gemini response alignment
+! ==============================================================================
+gemini.google.com##.response-container-header:style(margin-left: 0 !important; max-width: 85% !important;)
+gemini.google.com##.message-content:style(max-width: 100% !important; width: 100% !important; margin-left: 0 !important; margin-right: 0 !important;)
+gemini.google.com##.markdown > *:style(max-width: 100% !important; width: 100% !important; margin-left: 0 !important; margin-right: 0 !important;)
+gemini.google.com##message-actions:style(max-width: 94% !important; margin-left: 0 !important;)
+gemini.google.com##.response-container-footer:style(max-width: 94% !important; margin-left: 0 !important;)
 
 ! ==============================================================================
 ! CHAT BUBBLES & INPUT AREA
@@ -19,12 +28,12 @@ gemini.google.com##.luminous-expand-fade:style(background: none !important;)
 ! ==============================================================================
 ! CONTENT, CODE & TABLES
 ! ==============================================================================
-gemini.google.com##:matches-path(/^/app\/.+/) .content-container:style(background-color: black !important; border-radius: 10px !important;)
+gemini.google.com##.content-container:style(background-color: black !important; border-radius: 10px !important;)
 gemini.google.com##.formatted-code-block-internal-container:style(background-color: black !important; border-radius: 10px !important;)
 gemini.google.com##code:style(background-color: black !important; border-radius: 10px !important;)
 gemini.google.com##.preview-image-button:style(border: 2px solid #ffffff !important;)
 gemini.google.com##.new-file-preview-container:style(border: 2px solid #ffffff !important;)
-gemini.google.com##.table-block:style(max-width: 80% !important; margin-left: 0% !important; margin-right: auto !important;)
+gemini.google.com##.table-block:style(max-width: 80% !important; margin-left: 0 !important; margin-right: auto !important;)
 gemini.google.com##.table-block-component:style(display: block !important; overflow-x: visible !important;)
 gemini.google.com##.horizontal-scroll-wrapper:style(display: block !important; overflow-x: visible !important;)
 gemini.google.com##.table-content:style(mask-image: none !important;)
@@ -38,3 +47,8 @@ gemini.google.com##.footer-container
 gemini.google.com##gem-nav-list-item[data-test-id="desktop-bard-activity-control"]
 gemini.google.com##button[data-test-id="expandable-section-toggle"]:style(background-color: #660101 !important;)
 gemini.google.com##div[data-test-id="expandable-section-content"]:style(background-color: #475c59 !important;)
+
+! ==============================================================================
+! NOTEBOOK DIALOG
+! ==============================================================================
+gemini.google.com##.lumi-dialog:style(width: 20% !important; max-width: 90vw !important; height: 80% !important; max-height: 85vh !important; position: fixed !important; left: calc(280px + 50px) !important;)
