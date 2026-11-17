@@ -45,7 +45,7 @@ gemini.google.com##.youtube.attachment-container
 gemini.google.com##.hallucination-disclaimer
 gemini.google.com##.footer-container
 gemini.google.com##gem-nav-list-item[data-test-id="desktop-bard-activity-control"]
-gemini.google.com##button[data-test-id="expandable-section-toggle"]:style(background-color: #660101 !important;)
+gemini.google.com##.expandable-section-header-row:style(background-color: #660101 !important;)
 gemini.google.com##div[data-test-id="expandable-section-content"]:style(background-color: #475c59 !important;)
 
 ! ==============================================================================
