@@ -1,24 +1,22 @@
-/* Tested with "Live editor for CSS, Less & Sass - Magic CSS" Chrom extension. URL:
+/* Tested with "Live editor for CSS, Less & Sass - Magic CSS" Chrome extension. URL:
 https://chromewebstore.google.com/detail/live-editor-for-css-less/ifhikkcafabcgolfjegfcgloomalapol
 */
 
 /* ==============================================================================
-   LAYOUT & WIDTH (Scoped to app views)
+   LAYOUT & WIDTH
    ============================================================================== */
-body:has(.conversation-container) {
-    .conversation-container {
-        max-width: calc(100% - 100px) !important;
+.conversation-container {
+    max-width: calc(100% - 100px) !important;
 
-        .container {
-            background-color: #1F1F1F !important;
-            padding: 30px !important;
-            border-radius: 50px !important;
-            max-width: 85% !important;
-        }
+    .container {
+        background-color: #1F1F1F !important;
+        padding: 30px !important;
+        border-radius: 50px !important;
+        max-width: 85% !important;
     }
-    .input-area-container {
-        max-width: calc(100% - 100px) !important;
-    }
+}
+.input-area-container {
+    max-width: calc(100% - 100px) !important;
 }
 
 /* ==============================================================================
@@ -121,19 +119,21 @@ code {
 gem-nav-list-item[data-test-id="desktop-bard-activity-control"] {
     display: none !important;
 }
-button[data-test-id="expandable-section-toggle"] {
+.expandable-section-header-row {
     background-color: #660101 !important;
 }
 div[data-test-id="expandable-section-content"] {
     background-color: #475c59 !important;
 }
 
-/* Add to notebook box */
-.lumi-dialog{
+/* ==============================================================================
+   NOTEBOOK DIALOG
+   ============================================================================== */
+.lumi-dialog {
     width: 20% !important;
     max-width: 90vw !important;
     height: 80% !important;
     max-height: 85vh !important;
-    position: fixed !important; /* Anchor position to the left edge of the main container */
-    left: calc(280px + 50px) !important; /* 280px sidebar width + 50px offset */
+    position: fixed !important;
+    left: calc(280px + 50px) !important;
 }
