@@ -1,0 +1,36 @@
+/* 1. Always expand "About the job" description by removing line-clamp/height limits */
+p:has(> span[data-testid="expandable-text-box"]),
+span[data-testid="expandable-text-box"] {
+  -webkit-line-clamp: unset !important;
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+  display: block !important;
+}
+
+/* 2. Hide the "... more" toggle button inside the expanded job description */
+button[data-testid="expandable-text-button"] {
+  display: none !important;
+}
+
+/* 3. Hide AI Qualification / Resume Match cards ("Your profile and resume..." & "Use AI to assess how you fit") */
+div:has(> div > div[id^="JobMatchRef_"]),
+div:has(> div#InitialStateHowYouFitSlot) {
+  display: none !important;
+}
+
+/* 4. Hide Premium upsell cards ("See how you compare..." & "Job search faster with Premium") */
+div:has(> div > div > a[href*="upsellSlotId=JOB_DETAILS_SUMMARY_CARD"]),
+div:has(> div > div > div > a[href*="upsellOrderOrigin="]) {
+  display: none !important;
+}
+
+/* 5. Hide the entire "About the company" card (including its outer padded wrapper) */
+div:has(> div > div > a[aria-label="Show more about the company"]) {
+  display: none !important;
+}
+
+/* 6. Hide the entire "People you can reach out to" / "Meet the hiring team" outer card */
+div:has(> div > div > div > div > a[href*="screenContext=JOB_DETAILS_HIRING_TEAM"]) {
+  display: none !important;
+}
