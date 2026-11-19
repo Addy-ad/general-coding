@@ -1,0 +1,21 @@
+! ==========================================================================
+! LinkedIn Job Details Pane Cleaner (uBlock Origin Cosmetic Filters)
+! ==========================================================================
+
+! 1. Always expand "About the job" description by removing line-clamp/height limits
+www.linkedin.com##p:has(> span[data-testid="expandable-text-box"]), span[data-testid="expandable-text-box"]:style(-webkit-line-clamp: unset !important; max-height: none !important; height: auto !important; overflow: visible !important; display: block !important;)
+
+! 2. Hide the "... more" toggle button inside the expanded job description
+www.linkedin.com##button[data-testid="expandable-text-button"]
+
+! 3. Hide AI Qualification / Resume Match cards ("Your profile and resume..." & "Use AI to assess how you fit")
+www.linkedin.com##div:has(> div > div[id^="JobMatchRef_"]), div:has(> div#InitialStateHowYouFitSlot)
+
+! 4. Hide Premium upsell cards ("See how you compare..." & "Job search faster with Premium")
+www.linkedin.com##div:has(> div > div > a[href*="upsellSlotId=JOB_DETAILS_SUMMARY_CARD"]), div:has(> div > div > div > a[href*="upsellOrderOrigin="])
+
+! 5. Hide the entire "About the company" card (including its outer padded wrapper)
+www.linkedin.com##div:has(> div > div > a[aria-label="Show more about the company"])
+
+! 6. Hide the entire "People you can reach out to" / "Meet the hiring team" outer card
+www.linkedin.com##div:has(> div > div > div > div > a[href*="screenContext=JOB_DETAILS_HIRING_TEAM"])
