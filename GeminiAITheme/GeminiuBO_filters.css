@@ -52,3 +52,11 @@ gemini.google.com##div[data-test-id="expandable-section-content"]:style(backgrou
 ! NOTEBOOK DIALOG
 ! ==============================================================================
 gemini.google.com##.lumi-dialog:style(width: 20% !important; max-width: 90vw !important; height: 80% !important; max-height: 85vh !important; position: fixed !important; left: calc(280px + 50px) !important;)
+
+
+! ==============================================================================
+! INPUT TEXT BOX
+! ==============================================================================
+gemini.google.com##.text-input-field:style(background-color: #1F1F1F !important; border: 2px solid #757575 !important; border-radius: 30px !important; box-shadow: none !important; transition: border-color 0.2s ease, background-color 0.2s ease !important;)
+gemini.google.com##.text-input-field:focus-within:style(background-color: #161817 !important; border-color: #bcbcbc !important; box-shadow: 0 0 0 1px #2d5a3f !important;)
+gemini.google.com##.text-input-field .text-input-field-main-area, .text-input-field .textarea-wrapper, .text-input-field .ql-editor:style(background-color: transparent !important;)
