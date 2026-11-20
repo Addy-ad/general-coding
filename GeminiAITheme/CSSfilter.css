@@ -137,3 +137,26 @@ div[data-test-id="expandable-section-content"] {
     position: fixed !important;
     left: calc(280px + 50px) !important;
 }
+
+/* Match dark charcoal surface (#1F1F1F) and crisp white border from existing theme */
+.text-input-field {
+    background-color: #1F1F1F !important;
+    border: 2px solid #757575 !important;
+    border-radius: 30px !important;
+    box-shadow: none !important;
+    transition: border-color 0.2s ease, background-color 0.2s ease !important;
+}
+
+/* Shift to your muted slate-teal (#475c59) / deep forest accent when typing */
+.text-input-field:focus-within {
+    background-color: #161817 !important;
+    border-color: #bcbcbc !important;
+    box-shadow: 0 0 0 1px #2d5a3f !important;
+}
+
+/* Keep inner wrappers transparent in all states */
+.text-input-field .text-input-field-main-area,
+.text-input-field .textarea-wrapper,
+.text-input-field .ql-editor {
+    background-color: transparent !important;
+}
